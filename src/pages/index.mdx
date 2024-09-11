@@ -27,101 +27,316 @@ import outside from "../assets/outside.mp4";
 import transformer from "../assets/transformer.webp";
 
 <Header
-  title={frontmatter.title}
+  title="AffinityLM : Binding-Site Informed Multitask Language Model for Drug-Target Affinity Prediction"
   authors={[
     {
-      name: "Roman Hauksson",
-      url: "https://roman.technology",
-      institution: "Independent",
-      notes: ["*", "†"],
+      name: "Tyler Rose",
+      url: "https://bindwell.org",
+      institution: "Bindwell",
+      notes: ["*"],
     },
     {
-      name: "Author Two",
-      institution: "Institution Two",
-      notes: ["*", "†"],
+      name: "Charlotte Zhou",
+      url: "https://bindwell.org",
+      institution: "Bindwell",
+      notes: ["*"],
     },
     {
-      name: "Author Three",
-      institution: "Institution Three",
-      notes: ["†"],
+      name: "Nicolò Monti",
+      url: "https://bindwell.org",
+      institution: "Bindwell",
+      notes: ["*"],
     },
     {
-      name: "Author Four",
-      institution: "Institution Four",
+      name: "Navvye Anand",
+      url: "https://bindwell.org",
+      institution: "Bindwell",
+      notes: ["*"],
     },
   ]}
-  conference="Conference Name"
+  conference="IEEE International Conference on Bioinformatics and Biomedicine (BIBM)"
   notes={[
     {
       symbol: "*",
-      text: "author note one",
-    },
-    {
-      symbol: "†",
-      text: "author note two",
+      text: "All authors contributed equally to this work",
     },
   ]}
   links={[
     {
       name: "Paper",
-      url: "",
+      url: "https://www.biorxiv.org/content/10.1101/2024.02.08.575577v1",
       icon: "fa-solid:file-pdf",
     },
     {
       name: "Code",
-      url: "https://github.com/RomanHauksson/academic-project-astro-template",
+      url: "https://github.com/Bindwell/AffinityLM-V0",
       icon: "mdi:github",
     },
     {
-      name: "arXiv",
-      url: "",
+      name: "Demo",
+      url: "https://bindwell-website-final.vercel.app/create-project",
       icon: "academicons:arxiv",
     },
   ]}
-  />
+/>
 
 <Video source={outside} />
 
 ## Abstract
 
-This is a live demo for a template you can use to create a simple project page for your research paper. See the code for the template and instructions on how to use it yourself [here](https://github.com/RomanHauksson/academic-project-astro-template). It's made with the [Astro web framework](https://astro.build/) and styled with [Tailwind CSS](https://tailwindcss.com/). You write the content in [MDX](https://mdxjs.com/), which enables markdown formatting like **bold** and _italics_ as well as custom components like <SmallCaps>small caps.</SmallCaps>
+Drug-target affinity (DTA) prediction is crucial for drug discovery and repurposing. Current DTA prediction models are trained on datasets biased towards abundance of unique molecules relative to target proteins. Such models excel at molecule screening but struggle with inverse drug screening and generalization to novel targets. This data bias limitation hinders drug repurposing efforts and the development of truly general solutions capable of understanding interactions between any given drug and target. To address these challenges, we present AffinityLM, a multitask transformer model that creates comprehensive joint-feature representations of drug-target compounds. Our approach leverages both molecule-biased binding affinity and protein-biased binding site data, thus balancing the protein-molecule data distribution. This approach enables learning from a significantly more diverse dataset with more drug-target pairs, with the potential to improve accuracy and generalization. Despite being trained on a relatively smaller subset of data, comparative evaluations against state-of-the-art models on standard benchmarks like DAVIS and KIBA show that AffinityLM matches or surpasses existing models for binding affinity prediction. Our results demonstrate that models forced to learn rich feature spaces for drug-target interactions offer superior performance and versatility in DTA prediction tasks, paving the way for more effective and broadly applicable drug discovery strategies.
 
-## Another section, with a figure
+## Introduction
 
-Use the figure component to display images, videos, equations, or any other element, with an optional caption.
+Drug-target affinity (DTA) prediction is crucial for drug discovery, but traditional experimental methods are costly and time-consuming. While earlier computational methods relied on 3D structural information, the limited availability of such data has led to increased interest in 1D sequence representations for large-scale DTA prediction.
+Machine learning, particularly transformer models, has emerged as a promising approach for DTA prediction.
 
-<Figure
-    caption="Diagram of the transformer deep learning architecture."
-  >
-    <Image src={transformer} alt="alt text" />
+Transformers excel at processing 1D sequential data like SMILES and protein sequences, and can leverage pre-training on large-scale datasets. However, generalizability remains a challenge, especially for novel compounds or proteins.
+
+<Figure caption="The transformer deep learning architecture.">
+  <Image src={transformer} alt="alt text" />
 </Figure>
 
-## Two columns
+Current DTA prediction models are trained on datasets biased towards molecules, hindering inverse drug screening and generalization to new targets. Previous efforts to address this issue have not fully leveraged available molecular and protein data.
 
-Use the two columns component to display two columns of content. In this example, the first column contains a figure with a YouTube video and the second column contains a figure with a custom [React](https://react.dev/) component. By default, they display side by side, but if the screen is narrow enough (for example, on mobile), they're arranged vertically.
+We present AffinityLM, a novel multitask transformer model for DTA prediction. By combining molecule-biased binding affinity data with protein-biased binding site data, AffinityLM balances the protein-molecule distribution. This approach allows exposure to an unprecedented scale of unique drug-target pairs, potentially enhancing generalization. AffinityLM's multitask architecture forces the model to learn comprehensive representations of drug-target compounds, improving performance on novel drugs and targets.
 
-<TwoColumns>
-  <Figure slot="left" caption="Take a look at this YouTube video.">
-    <YouTubeVideo videoId="wjZofJX0v4M" />
-  </Figure>
-  <Figure slot="right" caption="Now look at this Gaussian Splat, rendered with a React component.">
-    <Splat client:idle />
-  </Figure>
-</TwoColumns>
+## Methodology
 
-## LaTeX
+## Preliminaries
 
-You can also add LaTeX formulas, rendered during the build process using [KaTeX](https://katex.org/) so they're quick to load for visitors of your project page. You can write them inline, like this: <LaTeX inline formula="a^2 + b^2 = c^2" />. Or, you can write them as a block:
+AffinityLM is designed to address the challenges in DTA prediction by leveraging a multitask learning framework that integrates both DTA prediction and BSP. This dual-task approach enables the model to learn richer and more nuanced representations of drug-target interactions. By employing pretrained transformers for the initial feature extraction of protein and molecule sequences, AffinityLM capitalizes on the transformers' ability to capture intricate sequence dependencies. This setup not only enhances the model's predictive accuracy but also improves its generalization capabilities across diverse DTPs.
 
-<LaTeX formula="\int_a^b f(x) dx" />
+Mathematically, our model <LaTeX inline formula="f" /> can be defined as a function that takes as input a protein sequence <LaTeX inline formula="p" /> and a molecule sequence <LaTeX inline formula="m" />, and outputs both a binding affinity prediction <LaTeX inline formula="a" /> and a binding site prediction <LaTeX inline formula="b" />, <LaTeX formula="f: (p, m) \rightarrow (a, b)." />
 
+Here, we have  <LaTeX inline formula="p \in \mathbb{R}^{l_p}" />, <LaTeX inline formula="m \in \mathbb{R}^{l_{m}}" />, <LaTeX inline formula="a \in \mathbb{R}" />, and <LaTeX inline formula="b \in \{0,1\}^{l_p}" />, <LaTeX inline formula="l_{p}" /> and <LaTeX inline formula="l_{m}" /> represent the lengths of the protein and molecule sequences, respectively.
+
+For batched inputs, we extend this formulation:
+
+<LaTeX formula="F: (\mathbf{P}, \mathbf{M}) \rightarrow (\mathbf{A}, \mathbf{B})" />
+
+where <LaTeX inline formula="\mathbf{P} \in \mathbb{R}^{n \times l_p}" />, <LaTeX inline formula="\mathbf{M} \in \mathbb{R}^{n \times l_m}" />, <LaTeX inline formula="\mathbf{A} \in \mathbb{R}^n" />, and <LaTeX inline formula="\mathbf{B} \in \{0,1\}^{n \times l_p}" />, with <LaTeX inline formula="n" /> representing the batch size.
+## Model
+
+Building upon the multitask specification, we now detail the architecture of AffinityLM, consisting of three main components: individual feature extraction, joint feature extraction, and task-specific prediction heads.
+
+Pretrained transformers have shown remarkable generalization and accuracy in natural language processing tasks, and recent studies have successfully applied them to DTA prediction. We leverage these pretrained models for individual feature extraction of proteins and molecules, yielding rich representations. This approach offers two key benefits: it allows for caching individual embeddings (thus reducing computational costs for repeated analyses) and enhances generalization through models pretrained on extensive datasets.
+
+<Figure caption="The PLAPT pre-trained transformer learning framework.">
+  <Image src="https://www.biorxiv.org/content/biorxiv/early/2024/02/12/2024.02.08.575577/F1.large.jpg" alt="Diagram of the transformer deep learning architecture" width={800} height={600} />
+</Figure>
+
+For protein feature extraction, we use the Ankh transformer, while for molecule feature extraction, we use MolFormer. The process for each is as follows:
+<ol>
+  <strong>Protein Embedding:</strong>
+    <ol type="a">
+      <li><strong>1.</strong> Tokenize a batch of <LaTeX inline formula="n" /> protein sequences <LaTeX inline formula="P" /> using Ankh's tokenizer with padding enabled, resulting in a tensor of shape <LaTeX inline formula="\mathbb{R}^{n \times L_p}" />, where <LaTeX inline formula="L_p" /> is the maximum protein sequence length in the batch.</li>
+      <li><strong>2.</strong> Feed the padded tokens through the Ankh encoder, producing protein embeddings of the size <LaTeX inline formula="\mathbf{E}_p \in \mathbb{R}^{n \times L_p \times 1536}" />.</li>
+    </ol>
+    <br/>
+<strong>Molecule Embedding:</strong>
+    <ol type="a">
+      <li><strong>1.</strong> Tokenize a batch of <LaTeX inline formula="n" /> molecule SMILES strings <LaTeX inline formula="\mathbf M" /> using MolFormer's tokenizer with padding enabled, resulting in a tensor of shape <LaTeX inline formula="\mathbb{R}^{n \times L_m}" />, where <LaTeX inline formula="L_m" /> is the maximum molecule sequence length in the batch.</li>
+      <li><strong>2.</strong> Feed the padded tokens through the MolFormer encoder, producing molecule embeddings <LaTeX inline formula="\mathbf{E}_m \in \mathbb{R}^{n \times L_m \times 512}" />.</li>
+    </ol>
+<br/>
+<ol type = "a">
+  <strong>Masking Padded Embeddings:</strong>
+  <li>  
+  To address the issue of padded embeddings, we apply a mask to the batches: <LaTeX inline formula="\mathbf{E}_{\text{masked}} = \mathbf{E} \odot \mathbf{M}_{\text{mask}} " />, where <LaTeX inline formula="\mathbf E" /> is the embedding tensor and <LaTeX inline formula="\mathbf{E}_{\text{masked}}" /> is a binary mask tensor of the same shape as <LaTeX inline formula=" \mathbf E" />. The mask is 1 for valid tokens and 0 for padding tokens.
+</li>
+</ol>
+</ol>
+
+## Multitask Specification  
+
+Based on previous research, we hypothesize that a multitask approach for DTA models can lead to a more comprehensive understanding of drug-target interactions. By predicting binding sites, the model may develop a better grasp of the spatial and chemical properties that contribute to binding, which could in turn improve its binding affinity predictions. Furthermore, because binding site prediction can be formulated as a token classification problem, it is well suited for sequence-based transformer models, which have exhibited high performance in recent literature. Besides, a multitask architecture may not only improve DTA prediction performance but also enhance the model's potential as a feature extractor for other drug-target pair attributes, potentially providing a rich internal representation of drug-target compounds that can be valuable for various downstream tasks in drug discovery. The multitask learning (MTL) approach in AffinityLM is designed to enhance the model's understanding of drug-target interactions by simultaneously predicting binding affinity and identifying binding sites. This strategy is motivated by the hypothesis that learning related tasks in parallel can lead to improved performance and generalization.
+
+
+<strong > Binding Affinity Prediction: </strong> A regression task to predict the binding affinity <LaTeX inline formula="a" /> between a protein <LaTeX inline formula="p" /> and a molecule <LaTeX inline formula="m" />.
+
+<strong > Binding Site Prediction: </strong> A sequence labeling task to predict which amino acids in the protein sequence <LaTeX inline formula="p" /> are part of the binding site for the molecule <LaTeX inline formula="m" />.
+
+
+Mathematically, we can formulate our multitask learning objective as follows: <LaTeX formula="\mathcal{L}_{total} = \lambda_1 \mathcal{L}_{DTA} + \lambda_2 \mathcal{L}_{BS}" />
+
+<LaTeX formula="\mathcal{L}_{DTA}: \quad \text{Loss function for the binding affinity prediction task (e.g., mean squared error), }" />
+<LaTeX formula="\mathcal{L}_{BS}: \quad \text{Loss function for the binding site identification task (e.g., binary cross-entropy),}" />
+<LaTeX formula="\lambda_1 \text{ and } \lambda_2: \quad \text{Hyperparameters that control the relative importance of each task.}" />
+
+For the binding affinity prediction task, we define the loss as the mean squared error (MSE) between the true affinity value <LaTeX inline formula="y" /> and the predicted affinity <LaTeX inline formula="\hat{y}" />.
+
+<Figure caption="AffinityLM framework.">
+  <Image src="https://i.ibb.co/cLWgDBN/Affinity-LM-Horizontal.png" alt="Diagram of the transformer deep learning architecture" width={800} height={600} />
+</Figure>
+
+
+## Model Configuration and Hyperparameters
+
+The key hyperparameters and training settings used to train AffinityLM are summarized in the following table:
+
+<table style="border-collapse: separate; border-spacing: 20px 0;">
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Embedding dimension</td>
+      <td>768</td>
+    </tr>
+    <tr>
+      <td>Number of attention layers</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>Number of attention heads</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <td>Feedforward expansion rate</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <td>Dropout rate</td>
+      <td>0.2</td>
+    </tr>
+    <tr>
+      <td>Maximum sequence length</td>
+      <td>4200</td>
+    </tr>
+    <tr>
+      <td>Optimizer</td>
+      <td>AdamW (fused)</td>
+    </tr>
+    <tr>
+      <td>Learning rate</td>
+      <td>5e-4</td>
+    </tr>
+    <tr>
+      <td>Batch size (affinity and binding site)</td>
+      <td>56</td>
+    </tr>
+    <tr>
+      <td>Number of epochs</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>Affinity loss weight</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <td>Binding site loss weight</td>
+      <td>0.5</td>
+    </tr>
+  </tbody>
+</table>
+
+
+## Results
+We evaluated AffinityLM's performance on the DAVIS and KIBA datasets, comparing it with several state-of-the-art models.
+
+<table style="border-collapse: separate; border-spacing: 20px 0;">
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>MSE↓</th>
+      <th>CI↑</th>
+      <th>r<sub>m</sub><sup>2</sup>↑</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>KronRLS</td>
+      <td>0.379</td>
+      <td>0.871</td>
+      <td>0.407</td>
+    </tr>
+    <tr>
+      <td>SimBoost</td>
+      <td>0.282</td>
+      <td>0.872</td>
+      <td>0.644</td>
+    </tr>
+    <tr>
+      <td>DeepDTA</td>
+      <td>0.261</td>
+      <td>0.878</td>
+      <td>0.630</td>
+    </tr>
+    <tr>
+      <td>GANsDTA</td>
+      <td>0.276</td>
+      <td>0.881</td>
+      <td>0.653</td>
+    </tr>
+    <tr>
+      <td>GraphDTA</td>
+      <td>0.229</td>
+      <td>0.893</td>
+      <td>0.649</td>
+    </tr>
+    <tr>
+      <td>TF-DTA</td>
+      <td>0.231</td>
+      <td>0.886</td>
+      <td>0.670</td>
+    </tr>
+    <tr>
+      <td>MGraphDTA</td>
+      <td>0.207</td>
+      <td><u>0.900</u></td>
+      <td><u>0.710</u></td>
+    </tr>
+    <tr>
+      <td>WGNN-DTA</td>
+      <td>0.208</td>
+      <td><u>0.900</u></td>
+      <td>0.692</td>
+    </tr>
+    <tr>
+      <td>DGraphDTA</td>
+      <td><strong>0.202</strong></td>
+      <td><strong>0.904</strong></td>
+      <td>0.700</td>
+    </tr>
+    <tr>
+      <td><strong>AffinityLM</strong></td>
+      <td><u>0.205</u></td>
+      <td>0.899</td>
+      <td><strong>0.712</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+Table: Performance Comparison on DAVIS Dataset. Best values are in **bold** and second-best values are <u>underlined</u>.
 ## BibTeX citation
 
 ```
-@misc{roman2024academic,
-  author = "{Roman Hauksson}",
-  title = "Academic Project Page Template",
-  year = "2024",
-  howpublished = "\url{https://research-template.roman.technology}",
+@article {Bindwell2025,
+	author = {Bindwell},
+	title = {AffinityLM: Binding-Site Informed Multitask Language Model for Drug-Target Affinity Prediction},
+	year = {2025},
+	publisher = {Cold Spring Harbor Laboratory},
+	journal = {bioRxiv}
+}
+```
+```
+
+@article {Rose2024.02.08.575577,
+	author = {Rose, Tyler and Monti, Nicol{\`o} and Anand, Navvye and Shen, Tianyu},
+	title = {PLAPT: Protein-Ligand Binding Affinity Prediction Using Pretrained Transformers},
+	elocation-id = {2024.02.08.575577},
+	year = {2024},
+	doi = {10.1101/2024.02.08.575577},
+	publisher = {Cold Spring Harbor Laboratory},
+	URL = {https://www.biorxiv.org/content/early/2024/02/09/2024.02.08.575577},
+	eprint = {https://www.biorxiv.org/content/early/2024/02/09/2024.02.08.575577.full.pdf},
+	journal = {bioRxiv}
 }
 ```
